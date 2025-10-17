@@ -31,9 +31,7 @@ let block = client.client_mut().get_block_by_number(request).await?;
 15. `SyncStorageMaps` - Storage map updates
 16. `SyncTransactions` - Transaction records
 
-### Convenience Methods
-
-High-level wrappers for common operations:
+### API usage
 
 ```rust
 // Get node status
@@ -61,45 +59,3 @@ let notes = client.get_notes_by_id(note_ids).await?;
 // Get account commitment (convenience wrapper)
 let commitment = client.get_account_commitment(&account_id).await?;
 ```
-
-## Usage Example
-
-```rust
-use miden_rpc_client::MidenRpcClient;
-use miden_objects::account::AccountId;
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Connect to Miden testnet
-    let mut client = MidenRpcClient::connect("https://rpc.testnet.miden.io").await?;
-
-    // Example 1: Get node status
-    let status = client.get_status().await?;
-    println!("Node version: {}", status.version);
-
-    // Example 2: Get account commitment
-    let account_id = AccountId::from_hex("0x8a65fc5a39e4cd106d648e3eb4ab5f")?;
-    let commitment = client.get_account_commitment(&account_id).await?;
-    println!("Commitment: {}", commitment);
-
-    // Example 3: Get latest block header
-    let header = client.get_block_header(None, false).await?;
-    println!("Latest block: {:?}", header.block_header);
-
-    // Example 4: Use full API for advanced operations
-    let notes_request = tonic::Request::new(
-        crate::note::NoteIdList { ids: vec![/* note IDs */] }
-    );
-    let notes = client.client_mut().get_notes_by_id(notes_request).await?;
-
-    Ok(())
-}
-```
-
-## Proto Definitions
-
-Proto files are sourced directly from [miden-node](https://github.com/0xPolygonMiden/miden-node/tree/next/proto/proto):
-- `proto/rpc.proto` - Main API service
-- `proto/types/*.proto` - Common types (account, note, transaction, etc.)
-- `proto/store/*.proto` - Store-specific types
-
